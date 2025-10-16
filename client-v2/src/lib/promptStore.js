@@ -27,6 +27,10 @@ async function submitPrompt(payload) {
       ),
     });
 
+    // TEMP DEBUG: surface response status
+    try {
+      console.debug("[promptStore] fetch status:", res.status, "ok:", res.ok);
+    } catch (e) {}
     if (!res.ok) {
       throw new Error(
         `Network response was not ok: ${res.status} ${res.statusText}`
