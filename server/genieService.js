@@ -102,6 +102,13 @@ async function generate(payload) {
   // Server-side sanitizer for any HTML content returned by application services
   const { sanitizeHtml } = require("./sanitizer");
 
+  // Normalize legacy service responses: some services return a raw data
+  // object (content/metadata) instead of the standard { success, data }
+  // envelope. Accept both shapes for backward compatibility.
+  if (svcRes && typeof svcRes === "object" && !("success" in svcRes)) {
+    svcRes = { success: true, data: svcRes };
+  }
+
   // Minimal default selector set: adjust if client uses different keys
   const DEFAULTS = { preset: "default" };
 
