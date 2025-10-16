@@ -18,13 +18,34 @@ async function submitPrompt(payload) {
   }));
 
   try {
+    // Prepare body payload. If running in a development environment, default
+    // to the deterministic `testService` so local dev and manual testing
+    // exercise the predictable test service rather than external AI.
+    const bodyPayload =
+      typeof payload === "string"
+        ? { prompt: payload }
+        : { ...(payload || {}) };
+
+    try {
+      // Vite exposes import.meta.env.DEV; guard in case it's undefined in other runners
+      const isDev =
+        typeof import.meta !== "undefined" &&
+        import.meta.env &&
+        import.meta.env.DEV;
+      const isLocalHost =
+        typeof window !== "undefined" &&
+        (window.location.hostname === "localhost" ||
+          window.location.hostname === "127.0.0.1");
+      if (!bodyPayload.serviceHint && (isDev || isLocalHost)) {
+        bodyPayload.serviceHint = "testService";
+      }
+    } catch (e) {}
+
     // Perform network call to the canonical V1 endpoint
     const res = await fetch("/api/generate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(
-        typeof payload === "string" ? { prompt: payload } : payload
-      ),
+      body: JSON.stringify(bodyPayload),
     });
 
     // TEMP DEBUG: surface response status
