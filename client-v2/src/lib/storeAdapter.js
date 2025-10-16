@@ -9,6 +9,14 @@ export function createStoreAdapter(initial = { body: "" }) {
   const originalUpdate = store.update;
 
   store.set = (v) => {
+    // TEMP DEBUG: surface values being set to previewStore
+    try {
+      console.debug(
+        "[previewStore.set] value type:",
+        typeof v,
+        v && v.length ? v.substring(0, 120) : v
+      );
+    } catch (e) {}
     if (typeof v === "string") return originalSet({ body: v });
     return originalSet(v);
   };

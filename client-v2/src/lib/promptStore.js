@@ -35,6 +35,11 @@ async function submitPrompt(payload) {
 
     const json = await res.json();
 
+    // TEMP DEBUG: log server result structure to help diagnose preview extraction
+    try {
+      console.debug("[promptStore] server result:", json);
+    } catch (e) {}
+
     // Extract HTML defensively using helper
     const html = extractPreviewHtml(json);
 
@@ -45,6 +50,13 @@ async function submitPrompt(payload) {
     }
 
     // Update the shared preview store with HTML for display using canonical shape
+    // TEMP DEBUG: log what will be set into previewStore
+    try {
+      console.debug(
+        "[promptStore] extracted html length:",
+        html && html.length
+      );
+    } catch (e) {}
     previewStore.set(normalizePreviewValue(html));
 
     // Persisted artifacts (if provided) can be returned to callers
